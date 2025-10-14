@@ -86,3 +86,27 @@ def transactions_data() :
     {'date': '2024-01-25', 'amount': 95.50},
     {'date': '2024-01-30', 'amount': 200.00},
     ]
+
+
+DEMO_STOCK_PRICES = [
+    {
+        "stock": "AAPL",
+        "price": 150.12
+    },
+    {
+        "stock": "AMZN",
+        "price": 3173.18
+    },
+    {
+        "stock": "GOOGL",
+        "price": 2742.39
+    },
+    {
+        "stock": "MSFT",
+        "price": 296.71
+    },
+    {
+        "stock": "TSLA",
+        "price": 1007.08
+    }
+]

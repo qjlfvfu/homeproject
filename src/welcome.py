@@ -2,37 +2,44 @@ import datetime
 from datetime import datetime
 
 
-def greeting(name: str = None) -> str:
+def get_greeting_by_time(time_str: str) -> str:
     """
-    Детальное приветствие с именем
+    Определяет приветствие на основе переданного времени.
 
     Args:
-        name: Имя пользователя (опционально)
+        time_str: Время в формате "YYYY-MM-DD HH:MM:SS"
 
     Returns:
-        str: Персонализированное приветствие
+        str: Приветствие ("Доброе утро"/"Добрый день"/etc)
     """
-    current_hour = datetime.now().hour
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        dt = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
+        hour = dt.hour
 
-    if 0 <= current_hour < 5:
-        greet = "Доброй ночи"
-        time_period = "ночи"
-    elif 5 <= current_hour < 12:
-        greet = "Доброе утро"
-        time_period = "утра"
-    elif 12 <= current_hour < 17:
-        greet = "Добрый день"
-        time_period = "дня"
-    elif 17 <= current_hour < 23:
-        greet = "Добрый вечер"
-        time_period = "вечера"
-    else:
-        greet = "Доброй ночи"
-        time_period = "ночи"
+        if 5 <= hour < 12:
+            return "Доброе утро"
+        elif 12 <= hour < 17:
+            return "Добрый день"
+        elif 17 <= hour < 23:
+            return "Добрый вечер"
+        else:
+            return "Доброй ночи"
+    except:
+        return "Добрый день"
 
-    if name:
-        return f"{greet}, {name}! Сейчас {current_time} ({time_period})."
-    else:
-        return f"{greet}! Сейчас {current_time} ({time_period})."
 
+def format_date(date_str: str) -> str:
+    """
+    Форматирует дату из YYYY-MM-DD в DD.MM.YYYY.
+
+    Args:
+        date_str: Дата в формате YYYY-MM-DD
+
+    Returns:
+        str: Дата в формате DD.MM.YYYY
+    """
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        return dt.strftime("%d.%m.%Y")
+    except:
+        return date_str
