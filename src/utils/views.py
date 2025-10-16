@@ -1,14 +1,15 @@
 import logging
 import os
-from _datetime import datetime, date, timedelta
-from typing import List, Any, Dict
+from typing import Any, Dict, List
+
 import requests
 import retry
-from requests.exceptions import RequestException, Timeout, ConnectionError
+from _datetime import date, datetime, timedelta
+from requests.exceptions import ConnectionError, RequestException, Timeout
 from tenacity import retry, stop_after_attempt, wait_fixed
+
 from src.welcome import format_date
 from tests.confest import DEMO_STOCK_PRICES
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
@@ -23,7 +24,9 @@ logger.addHandler(file_handler)
 API_KEY = os.getenv("API_KEY")
 
 
-def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) -> float:
+def investment_bank(
+    month: str, transactions: List[Dict[str, Any]], limit: int
+) -> float:
     """
     Рассчитывает сумму для откладывания в «Инвесткопилку» за указанный месяц.
 
@@ -39,22 +42,24 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
 
     for transaction in transactions:
         # Проверяем, что транзакция содержит необходимые поля
-        if 'date' not in transaction or 'amount' not in transaction:
+        if "date" not in transaction or "amount" not in transaction:
             continue
 
-        transaction_date = transaction['date']
-        amount = transaction['amount']
+        transaction_date = transaction["date"]
+        amount = transaction["amount"]
 
         # Проверяем формат даты и что транзакция относится к нужному месяцу
         try:
             # Парсим дату транзакции
-            trans_date = datetime.strptime(transaction_date, '%Y-%m-%d')
+            trans_date = datetime.strptime(transaction_date, "%Y-%m-%d")
             # Парсим целевой месяц
-            target_month = datetime.strptime(month, '%Y-%m')
+            target_month = datetime.strptime(month, "%Y-%m")
 
             # Проверяем, что транзакция в нужном месяце
-            if (trans_date.year == target_month.year and
-                    trans_date.month == target_month.month):
+            if (
+                trans_date.year == target_month.year
+                and trans_date.month == target_month.month
+            ):
 
                 # Округляем сумму до ближайшего кратного limit в большую сторону
                 rounded_amount = round(amount / limit) * limit
@@ -67,7 +72,7 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
                     total_investment += difference
 
         except (ValueError, TypeError):
-            logger.error('Некорректные данные!!!!')
+            logger.error("Некорректные данные!!!!")
             # Пропускаем транзакции с некорректными данными
             continue
 
@@ -75,7 +80,7 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
 
 
 @retry(stop=stop_after_attempt(4), wait=wait_fixed(2))
-def currency_analys(user_settings: List[Dict[str, Any]],end_date:str) -> Any:
+def currency_analys(user_settings: List[Dict[str, Any]], end_date: str) -> Any:
     """
     Анализ курсов валют за указанный период
 
@@ -95,12 +100,12 @@ def currency_analys(user_settings: List[Dict[str, Any]],end_date:str) -> Any:
     url = f"https://api.apilayer.com/currency_data/timeframe?start_date={start_date}&end_date={end_date}"
 
     payload = {}
-    headers = {
-        "apikey": "RLFkPcvU6w1MZKhPv39bkeW2I7SQ0zRX"
-    }
+    headers = {"apikey": "RLFkPcvU6w1MZKhPv39bkeW2I7SQ0zRX"}
 
     try:
-        response = requests.request("GET", url, headers=headers, data=payload, timeout=10)
+        response = requests.request(
+            "GET", url, headers=headers, data=payload, timeout=10
+        )
         response.raise_for_status()
 
         # Исправляем обработку ответа
@@ -110,7 +115,7 @@ def currency_analys(user_settings: List[Dict[str, Any]],end_date:str) -> Any:
             # Возвращаем данные, а не float
             return result
         else:
-            error_info = result.get('error', {}).get('info', 'Unknown error')
+            error_info = result.get("error", {}).get("info", "Unknown error")
             print(f"Ошибка API: {error_info}")
             # Возвращаем пустой результат или обрабатываем ошибку
             return {"error": error_info}
@@ -132,21 +137,25 @@ def get_top_transactions(transactions_data: List[Dict], top_n: int = 5) -> List[
         List[Dict]: Топовые транзакции
     """
     # Фильтруем только расходы (положительные суммы)
-    expenses = [t for t in transactions_data if t.get('amount', 0) > 0]
+    expenses = [t for t in transactions_data if t.get("amount", 0) > 0]
 
     # Сортируем по сумме (по убыванию) и берем топ-N
-    sorted_transactions = sorted(expenses, key=lambda x: x.get('amount', 0), reverse=True)
+    sorted_transactions = sorted(
+        expenses, key=lambda x: x.get("amount", 0), reverse=True
+    )
     top_transactions = sorted_transactions[:top_n]
 
     # Форматируем вывод
     formatted_transactions = []
     for transaction in top_transactions:
-        formatted_transactions.append({
-            'date': format_date(transaction.get('date', '')),
-            'amount': round(transaction.get('amount', 0), 2),
-            'category': transaction.get('category', 'Неизвестно'),
-            'description': transaction.get('description', '')
-        })
+        formatted_transactions.append(
+            {
+                "date": format_date(transaction.get("date", "")),
+                "amount": round(transaction.get("amount", 0), 2),
+                "category": transaction.get("category", "Неизвестно"),
+                "description": transaction.get("description", ""),
+            }
+        )
 
     return formatted_transactions
 
@@ -168,9 +177,7 @@ def get_currency_rates(api_key: str) -> None | list[Any] | str:
 
         url = f"https://api.apilayer.com/currency_data/timeframe?start_date={start_date}&end_date={end_date}"
 
-        headers = {
-            "apikey": api_key
-        }
+        headers = {"apikey": api_key}
 
         response = requests.get(url, headers=headers)
 
@@ -178,27 +185,23 @@ def get_currency_rates(api_key: str) -> None | list[Any] | str:
             data = response.json()
 
             # Извлекаем последние доступные курсы
-            if data.get('success', False) and data.get('quotes'):
+            if data.get("success", False) and data.get("quotes"):
                 # Берем последнюю дату из доступных
-                latest_date = sorted(data['quotes'].keys())[-1]
-                latest_rates = data['quotes'][latest_date]
+                latest_date = sorted(data["quotes"].keys())[-1]
+                latest_rates = data["quotes"][latest_date]
 
                 currency_rates = []
 
                 # Преобразуем формат валют из USDUSD, USDEUR в USD, EUR
                 for currency_pair, rate in latest_rates.items():
-                    if currency_pair.startswith('USD'):
+                    if currency_pair.startswith("USD"):
                         currency = currency_pair[3:]  # Убираем 'USD' из начала
-                        currency_rates.append({
-                            "currency": currency,
-                            "rate": round(rate, 2)
-                        })
+                        currency_rates.append(
+                            {"currency": currency, "rate": round(rate, 2)}
+                        )
 
                 # Добавляем USD как базовую валюту
-                currency_rates.insert(0, {
-                    "currency": "USD",
-                    "rate": 1.0
-                })
+                currency_rates.insert(0, {"currency": "USD", "rate": 1.0})
 
                 return currency_rates[:3]  # Возвращаем топ-3 валюты
 
@@ -224,18 +227,12 @@ def get_stock_prices_from_yahoo() -> List[Dict]:
 
             if response.status_code == 200:
                 data = response.json()
-                if 'chart' in data and 'result' in data['chart']:
-                    price = data['chart']['result'][0]['meta']['regularMarketPrice']
-                    stock_prices.append({
-                        "stock": stock,
-                        "price": round(price, 2)
-                    })
+                if "chart" in data and "result" in data["chart"]:
+                    price = data["chart"]["result"][0]["meta"]["regularMarketPrice"]
+                    stock_prices.append({"stock": stock, "price": round(price, 2)})
 
         return stock_prices if stock_prices else DEMO_STOCK_PRICES()
 
     except Exception as e:
         print(f"Error fetching from Yahoo: {e}")
         return DEMO_STOCK_PRICES()
-
-
-

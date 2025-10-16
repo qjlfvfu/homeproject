@@ -1,7 +1,8 @@
-import pandas as pd
-import os
 import json
+import os
 import tempfile
+
+import pandas as pd
 
 
 class TestReportWriter:
@@ -24,11 +25,13 @@ class TestReportWriter:
 
                 # Проверяем что файл создался
                 files = os.listdir(temp_dir)
-                report_files = [f for f in files if f.startswith('report_test_function_')]
+                report_files = [
+                    f for f in files if f.startswith("report_test_function_")
+                ]
                 assert len(report_files) == 1
 
                 # Проверяем содержимое файла
-                with open(report_files[0], 'r', encoding='utf-8') as f:
+                with open(report_files[0], "r", encoding="utf-8") as f:
                     file_content = json.load(f)
 
                 assert file_content == result
@@ -53,7 +56,7 @@ class TestReportWriter:
 
                 assert os.path.exists("custom_report.json")
 
-                with open("custom_report.json", 'r', encoding='utf-8') as f:
+                with open("custom_report.json", "r", encoding="utf-8") as f:
                     file_content = json.load(f)
 
                 assert file_content == result
@@ -67,10 +70,7 @@ class TestReportWriter:
 
         @report_writer("dataframe_report.csv")
         def test_function():
-            return pd.DataFrame({
-                'col1': [1, 2, 3],
-                'col2': ['a', 'b', 'c']
-            })
+            return pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
 
         with tempfile.TemporaryDirectory() as temp_dir:
             original_dir = os.getcwd()
@@ -93,14 +93,15 @@ class TestReportWriter:
         from src.utils import report_writer
 
         test_cases = [
-            ('report.json', 'json'),
-            ('data.csv', 'csv'),
-            ('analysis.xlsx', 'xlsx'),
-            ('summary.txt', 'txt'),
-            ('data', 'json')  # расширение по умолчанию
+            ("report.json", "json"),
+            ("data.csv", "csv"),
+            ("analysis.xlsx", "xlsx"),
+            ("summary.txt", "txt"),
+            ("data", "json"),  # расширение по умолчанию
         ]
 
         for filename, expected_extension in test_cases:
+
             @report_writer(filename)
             def test_func():
                 return {"test": "data"}
@@ -113,7 +114,11 @@ class TestReportWriter:
                     test_func()
 
                     # Проверяем что файл создался с правильным расширением
-                    final_filename = filename if '.' in filename else f"{filename}.{expected_extension}"
+                    final_filename = (
+                        filename
+                        if "." in filename
+                        else f"{filename}.{expected_extension}"
+                    )
                     assert os.path.exists(final_filename)
 
                 finally:

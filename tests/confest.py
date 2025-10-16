@@ -1,7 +1,7 @@
-import pytest
-
 from typing import Any, Dict, List, Tuple
 from unittest.mock import patch
+
+import pytest
 
 
 @pytest.fixture
@@ -29,7 +29,15 @@ def edge_case_dates() -> List[Tuple[str, str]]:
 @pytest.fixture
 def invalid_dates() -> List[str]:
     """Фикстура с невалидными датами"""
-    return ["invalid-date-format", "2023-13-45", "2023/12/31", "31.12.2023", "2023-12-31T25:61:61.999", "", "12345"]
+    return [
+        "invalid-date-format",
+        "2023-13-45",
+        "2023/12/31",
+        "31.12.2023",
+        "2023-12-31T25:61:61.999",
+        "",
+        "12345",
+    ]
 
 
 @pytest.fixture
@@ -66,7 +74,12 @@ def currency_data() -> List[Dict[str, Any]]:
     return [
         {"amount": "1300", "from_curr": "RUB", "to_currs": "USD", "date": "2023-02-04"},
         {"amount": "600", "from_curr": "RUB", "to_currs": "USD", "date": "2011-09-11"},
-        {"amount": "56473890", "from_curr": "RUB", "to_currs": "USD", "date": "2022-07-04"},
+        {
+            "amount": "56473890",
+            "from_curr": "RUB",
+            "to_currs": "USD",
+            "date": "2022-07-04",
+        },
     ]
 
 
@@ -78,35 +91,20 @@ def mock_requests():
 
 
 @pytest.fixture
-def transactions_data() :
+def transactions_data():
     transactions = [
-    {'date': '2024-01-15', 'amount': 123.45},
-    {'date': '2024-01-20', 'amount': 67.89},
-    {'date': '2024-02-01', 'amount': 150.00},
-    {'date': '2024-01-25', 'amount': 95.50},
-    {'date': '2024-01-30', 'amount': 200.00},
+        {"date": "2024-01-15", "amount": 123.45},
+        {"date": "2024-01-20", "amount": 67.89},
+        {"date": "2024-02-01", "amount": 150.00},
+        {"date": "2024-01-25", "amount": 95.50},
+        {"date": "2024-01-30", "amount": 200.00},
     ]
 
 
 DEMO_STOCK_PRICES = [
-    {
-        "stock": "AAPL",
-        "price": 150.12
-    },
-    {
-        "stock": "AMZN",
-        "price": 3173.18
-    },
-    {
-        "stock": "GOOGL",
-        "price": 2742.39
-    },
-    {
-        "stock": "MSFT",
-        "price": 296.71
-    },
-    {
-        "stock": "TSLA",
-        "price": 1007.08
-    }
+    {"stock": "AAPL", "price": 150.12},
+    {"stock": "AMZN", "price": 3173.18},
+    {"stock": "GOOGL", "price": 2742.39},
+    {"stock": "MSFT", "price": 296.71},
+    {"stock": "TSLA", "price": 1007.08},
 ]

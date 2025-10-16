@@ -1,10 +1,11 @@
-import json
 import csv
-import pandas as pd
-from datetime import datetime
-from typing import Callable, Any, Optional
 import functools
+import json
 import os
+from datetime import datetime
+from typing import Any, Callable, Optional
+
+import pandas as pd
 
 
 def report_writer(filename: Optional[str] = None):
@@ -54,14 +55,14 @@ def report_writer(filename: Optional[str] = None):
 
 def determine_extension(filename: str) -> str:
     """Определяет расширение файла на основе имени или типа данных по умолчанию."""
-    if '.' in filename:
-        return filename.split('.')[-1].lower()
-    return 'json'  # расширение по умолчанию
+    if "." in filename:
+        return filename.split(".")[-1].lower()
+    return "json"  # расширение по умолчанию
 
 
 def ensure_extension(filename: str, extension: str) -> str:
     """Добавляет расширение к имени файла если его нет."""
-    if '.' not in filename:
+    if "." not in filename:
         return f"{filename}.{extension}"
     return filename
 
@@ -76,15 +77,17 @@ def save_result(result: Any, filename: str, extension: str) -> None:
         extension: Расширение файла
     """
     # Создаем директорию если её нет
-    os.makedirs(os.path.dirname(filename) if os.path.dirname(filename) else '.', exist_ok=True)
+    os.makedirs(
+        os.path.dirname(filename) if os.path.dirname(filename) else ".", exist_ok=True
+    )
 
-    if extension == 'json':
+    if extension == "json":
         save_as_json(result, filename)
-    elif extension == 'csv':
+    elif extension == "csv":
         save_as_csv(result, filename)
-    elif extension in ['xlsx', 'xls']:
+    elif extension in ["xlsx", "xls"]:
         save_as_excel(result, filename)
-    elif extension == 'txt':
+    elif extension == "txt":
         save_as_text(result, filename)
     else:
         # По умолчанию сохраняем как JSON
@@ -95,39 +98,39 @@ def save_as_json(result: Any, filename: str) -> None:
     """Сохраняет результат в JSON формате."""
     if isinstance(result, pd.DataFrame):
         # Для DataFrame сохраняем в orient='records' для лучшей читаемости
-        result.to_json(filename, orient='records', indent=2, force_ascii=False)
+        result.to_json(filename, orient="records", indent=2, force_ascii=False)
     elif isinstance(result, (dict, list)):
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=2)
     else:
         # Для других типов создаем словарь с результатом
         data = {"result": str(result), "type": type(result).__name__}
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def save_as_csv(result: Any, filename: str) -> None:
     """Сохраняет результат в CSV формате."""
     if isinstance(result, pd.DataFrame):
-        result.to_csv(filename, index=False, encoding='utf-8')
+        result.to_csv(filename, index=False, encoding="utf-8")
     elif isinstance(result, list) and all(isinstance(item, dict) for item in result):
         # Список словарей
         if result:
             fieldnames = result[0].keys()
-            with open(filename, 'w', newline='', encoding='utf-8') as f:
+            with open(filename, "w", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
                 writer.writeheader()
                 writer.writerows(result)
     elif isinstance(result, dict):
         # Словарь - сохраняем как одну строку с ключ-значение
-        with open(filename, 'w', newline='', encoding='utf-8') as f:
+        with open(filename, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(['Key', 'Value'])
+            writer.writerow(["Key", "Value"])
             for key, value in result.items():
                 writer.writerow([key, value])
     else:
         # Для других типов сохраняем как текст
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(str(result))
 
 
@@ -143,20 +146,22 @@ def save_as_excel(result: Any, filename: str) -> None:
                 for sheet_name, data in result.items():
                     if isinstance(data, (pd.DataFrame, list, dict)):
                         df = convert_to_dataframe(data)
-                        df.to_excel(writer, sheet_name=str(sheet_name)[:31], index=False)
+                        df.to_excel(
+                            writer, sheet_name=str(sheet_name)[:31], index=False
+                        )
         else:
             # Простой словарь
             df = pd.DataFrame([result])
             df.to_excel(filename, index=False)
     else:
         # Для других типов создаем простой DataFrame
-        df = pd.DataFrame({'result': [str(result)]})
+        df = pd.DataFrame({"result": [str(result)]})
         df.to_excel(filename, index=False)
 
 
 def save_as_text(result: Any, filename: str) -> None:
     """Сохраняет результат в текстовом формате."""
-    with open(filename, 'w', encoding='utf-8') as f:
+    with open(filename, "w", encoding="utf-8") as f:
         if isinstance(result, pd.DataFrame):
             f.write(result.to_string())
         elif isinstance(result, (dict, list)):
@@ -174,4 +179,4 @@ def convert_to_dataframe(data: Any) -> pd.DataFrame:
     elif isinstance(data, dict):
         return pd.DataFrame([data])
     else:
-        return pd.DataFrame({'value': [data]})
+        return pd.DataFrame({"value": [data]})

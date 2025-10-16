@@ -1,9 +1,9 @@
 import json
-from _datetime import datetime
 import logging
-from typing import List,Any,Dict
 import os
+from typing import Any, Dict, List
 
+from _datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
@@ -23,49 +23,38 @@ def finder(query, json_file):
     Возвращает JSON с найденными транзакциями
     """
     try:
-        with open(json_file, 'r', encoding='utf-8') as file:
+        with open(json_file, "r", encoding="utf-8") as file:
             transactions = json.load(file)
 
         results = []
         query_lower = query.lower()
 
         for transaction in transactions:
-            description = transaction.get('description', '').lower()
-            category = transaction.get('category', '').lower()
+            description = transaction.get("description", "").lower()
+            category = transaction.get("category", "").lower()
 
             if query_lower in description or query_lower in category:
                 results.append(transaction)
 
-        return {
-            "query": query,
-            "found": len(results),
-            "results": results
-        }
+        return {"query": query, "found": len(results), "results": results}
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "results": []
-        }
+        return {"error": str(e), "results": []}
 
     except FileNotFoundError:
-        logger.error('Файл не найден!!!💥')
+        logger.error("Файл не найден!!!💥")
         return {
             "status": "error",
             "message": f"Файл {json_file} не найден",
-            "results": []
+            "results": [],
         }
     except json.JSONDecodeError:
-        logger.error('Файл не прочитан!!!💥')
-        return {
-            "status": "error",
-            "message": "Ошибка чтения JSON файла",
-            "results": []
-        }
+        logger.error("Файл не прочитан!!!💥")
+        return {"status": "error", "message": "Ошибка чтения JSON файла", "results": []}
     except Exception as e:
-        logger.error('Ошибка поиска по файлу💥')
+        logger.error("Ошибка поиска по файлу💥")
         return {
             "status": "error",
             "message": f"Ошибка при поиске: {str(e)}",
-            "results": []
+            "results": [],
         }

@@ -24,7 +24,7 @@ def get_greeting_by_time(time_str: str) -> str:
             return "Добрый вечер"
         else:
             return "Доброй ночи"
-    except:
+    except Exception:
         return "Добрый день"
 
 

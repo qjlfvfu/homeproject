@@ -1,9 +1,12 @@
-from datetime import datetime
 import json
-from typing import Optional, List, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from src.utils import (get_currency_rates, get_stock_prices_from_yahoo,
+                       get_top_transactions)
 from src.utils.statistic import get_card_statistics
-from src.utils import get_currency_rates, get_stock_prices_from_yahoo, get_top_transactions
 from src.welcome import get_greeting_by_time
+
 
 def format_currency_rates_for_report(rates_data: Dict) -> List[Dict]:
     """
@@ -18,20 +21,19 @@ def format_currency_rates_for_report(rates_data: Dict) -> List[Dict]:
     formatted_rates = []
 
     # Основные валюты для отчета
-    target_currencies = ['USD', 'EUR', 'GBP', 'CNY']
+    target_currencies = ["USD", "EUR", "GBP", "CNY"]
 
     for currency in target_currencies:
         if currency in rates_data:
-            formatted_rates.append({
-                "currency": currency,
-                "rate": round(rates_data[currency], 2)
-            })
+            formatted_rates.append(
+                {"currency": currency, "rate": round(rates_data[currency], 2)}
+            )
 
     # Если нет данных, возвращаем демо-данные
     if not formatted_rates:
         formatted_rates = [
             {"currency": "USD", "rate": 73.21},
-            {"currency": "EUR", "rate": 87.08}
+            {"currency": "EUR", "rate": 87.08},
         ]
 
     return formatted_rates
@@ -50,14 +52,13 @@ def format_stock_prices_for_report(stocks_data: Dict) -> List[Dict]:
     formatted_stocks = []
 
     # Основные акции для S&P500
-    target_stocks = ['AAPL', 'AMZN', 'GOOGL', 'MSFT', 'TSLA']
+    target_stocks = ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
 
     for stock in target_stocks:
         if stock in stocks_data:
-            formatted_stocks.append({
-                "stock": stock,
-                "price": round(stocks_data[stock], 2)
-            })
+            formatted_stocks.append(
+                {"stock": stock, "price": round(stocks_data[stock], 2)}
+            )
 
     # Если нет данных, возвращаем демо-данные
     if not formatted_stocks:
@@ -66,17 +67,17 @@ def format_stock_prices_for_report(stocks_data: Dict) -> List[Dict]:
             {"stock": "AMZN", "price": 3173.18},
             {"stock": "GOOGL", "price": 2742.39},
             {"stock": "MSFT", "price": 296.71},
-            {"stock": "TSLA", "price": 1007.08}
+            {"stock": "TSLA", "price": 1007.08},
         ]
 
     return formatted_stocks
 
 
 def generate_financial_report(
-        time_str: str,
-        transactions_data: Optional[List[Dict]] = None,
-        currency_api: Optional[str] = None,
-        stock_api: Optional[str] = None
+    time_str: str,
+    transactions_data: Optional[List[Dict]] = None,
+    currency_api: Optional[str] = None,
+    stock_api: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Генерирует полный финансовый отчет согласно заданию.
@@ -110,7 +111,7 @@ def generate_financial_report(
         print(f"Ошибка получения курсов валют: {e}")
         currency_rates = [
             {"currency": "USD", "rate": 73.21},
-            {"currency": "EUR", "rate": 87.08}
+            {"currency": "EUR", "rate": 87.08},
         ]
 
     # Получаем цены акций
@@ -127,7 +128,7 @@ def generate_financial_report(
             {"stock": "AMZN", "price": 3173.18},
             {"stock": "GOOGL", "price": 2742.39},
             {"stock": "MSFT", "price": 296.71},
-            {"stock": "TSLA", "price": 1007.08}
+            {"stock": "TSLA", "price": 1007.08},
         ]
 
     # Формируем итоговый отчет
@@ -136,7 +137,7 @@ def generate_financial_report(
         "cards": cards,
         "top_transactions": top_transactions,
         "currency_rates": currency_rates,
-        "stock_prices": stock_prices
+        "stock_prices": stock_prices,
     }
 
     return report
@@ -166,43 +167,43 @@ def main(time_str: str, currency_api: str = None, stock_api: str = None) -> str:
                 "amount": 1262.00,
                 "date": "2021-12-21",
                 "category": "Переводы",
-                "description": "Перевод Кредитная карта. ТП 10.2 RUR"
+                "description": "Перевод Кредитная карта. ТП 10.2 RUR",
             },
             {
                 "card_number": "1234567890127512",
                 "amount": 7.94,
                 "date": "2021-12-20",
                 "category": "Супермаркеты",
-                "description": "Лента"
+                "description": "Лента",
             },
             {
                 "card_number": "1234567890125814",
                 "amount": 829.00,
                 "date": "2021-12-20",
                 "category": "Супермаркеты",
-                "description": "Лента"
+                "description": "Лента",
             },
             {
                 "card_number": "1234567890125814",
                 "amount": 421.00,
                 "date": "2021-12-20",
                 "category": "Различные товары",
-                "description": "Ozon.ru"
+                "description": "Ozon.ru",
             },
             {
                 "card_number": "1234567890127512",
                 "amount": 14216.42,
                 "date": "2021-12-16",
                 "category": "ЖКХ",
-                "description": "ЖКУ Квартира"
+                "description": "ЖКУ Квартира",
             },
             {
                 "card_number": "1234567890125814",
                 "amount": 453.00,
                 "date": "2021-12-16",
                 "category": "Бонусы",
-                "description": "Кешбэк за обычные покупки"
-            }
+                "description": "Кешбэк за обычные покупки",
+            },
         ]
 
         # Генерируем отчет
@@ -210,16 +211,20 @@ def main(time_str: str, currency_api: str = None, stock_api: str = None) -> str:
             time_str=time_str,
             transactions_data=sample_transactions,  # Заменить на реальные данные
             currency_api=currency_api,
-            stock_api=stock_api
+            stock_api=stock_api,
         )
 
         # Возвращаем в формате JSON
         return json.dumps(report, ensure_ascii=False, indent=2)
 
     except ValueError as e:
-        return json.dumps({"error": f"Неверный формат времени: {e}"}, ensure_ascii=False)
+        return json.dumps(
+            {"error": f"Неверный формат времени: {e}"}, ensure_ascii=False
+        )
     except Exception as e:
-        return json.dumps({"error": f"Ошибка при генерации отчета: {e}"}, ensure_ascii=False)
+        return json.dumps(
+            {"error": f"Ошибка при генерации отчета: {e}"}, ensure_ascii=False
+        )
 
 
 # Тестирование
