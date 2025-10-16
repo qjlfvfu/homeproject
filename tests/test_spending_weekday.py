@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from utils.spending_weekday import spending_by_weekday
+from src.utils.spending_weekday import spending_by_weekday
 
 
 class TestSpendingByWeekday:

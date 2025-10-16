@@ -8,7 +8,7 @@ class TestReportWriter:
 
     def test_decorator_without_filename(self):
         """Тест декоратора без указания имени файла."""
-        from utils.reports import report_writer  # замените на ваш модуль
+        from src.utils import report_writer  # замените на ваш модуль
 
         @report_writer()
         def test_function():
@@ -38,7 +38,7 @@ class TestReportWriter:
 
     def test_decorator_with_filename(self):
         """Тест декоратора с указанием имени файла."""
-        from utils.reports import report_writer
+        from src.utils import report_writer
 
         @report_writer("custom_report.json")
         def test_function():
@@ -63,7 +63,7 @@ class TestReportWriter:
 
     def test_decorator_with_dataframe(self):
         """Тест декоратора с DataFrame."""
-        from utils.reports import report_writer
+        from src.utils import report_writer
 
         @report_writer("dataframe_report.csv")
         def test_function():
@@ -90,7 +90,7 @@ class TestReportWriter:
 
     def test_different_file_extensions(self):
         """Тест разных расширений файлов."""
-        from utils.reports import report_writer
+        from src.utils import report_writer
 
         test_cases = [
             ('report.json', 'json'),
@@ -121,7 +121,7 @@ class TestReportWriter:
 
     def test_function_arguments_preserved(self):
         """Тест что аргументы функции сохраняются."""
-        from utils.reports import report_writer
+        from src.utils import report_writer
 
         @report_writer()
         def func_with_args(a, b, c=10):

@@ -49,7 +49,7 @@ def create_test_files():
     print("✓ Создан файл operation.xlsx")
 
     # Создаем JSON файл
-    with open("operation.json", "w", encoding="utf-8") as f:
+    with open("user_settings.json", "w", encoding="utf-8") as f:
         json.dump(test_data, f, ensure_ascii=False, indent=2)
     print("✓ Создан файл operation.json")
 

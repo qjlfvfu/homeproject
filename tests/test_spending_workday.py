@@ -1,4 +1,4 @@
-from utils.spending_workday import spending_by_workday
+from src.utils import spending_by_workday
 import pytest
 import pandas as pd
 import numpy as np

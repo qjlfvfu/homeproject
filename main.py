@@ -1,9 +1,8 @@
 from datetime import datetime
 import json
 from typing import Optional, List, Dict, Any
-from src.welcome import format_date
-from utils.statistic import get_card_statistics
-from utils.views import get_currency_rates, get_stock_prices_from_yahoo, get_top_transactions
+from src.utils.statistic import get_card_statistics
+from src.utils import get_currency_rates, get_stock_prices_from_yahoo, get_top_transactions
 from src.welcome import get_greeting_by_time
 
 def format_currency_rates_for_report(rates_data: Dict) -> List[Dict]:
