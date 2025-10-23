@@ -3,12 +3,11 @@ import os
 from typing import Any, Dict, List
 
 import requests
-import retry
 from _datetime import date, datetime, timedelta
-from requests.exceptions import ConnectionError, RequestException, Timeout
+from requests.exceptions import RequestException
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from src.welcome import format_date
+from src.utils.welcome import format_date
 from tests.confest import DEMO_STOCK_PRICES
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,61 +21,6 @@ file_formater = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)
 file_handler.setFormatter(file_formater)
 logger.addHandler(file_handler)
 API_KEY = os.getenv("API_KEY")
-
-
-def investment_bank(
-    month: str, transactions: List[Dict[str, Any]], limit: int
-) -> float:
-    """
-    Рассчитывает сумму для откладывания в «Инвесткопилку» за указанный месяц.
-
-    Args:
-        month: Месяц в формате 'YYYY-MM'
-        transactions: Список транзакций с полями 'date' и 'amount'
-        limit: Предел для округления сумм операций
-
-    Returns:
-        float: Сумма, которую удалось бы отложить в «Инвесткопилку»
-    """
-    total_investment = 0.0
-
-    for transaction in transactions:
-        # Проверяем, что транзакция содержит необходимые поля
-        if "date" not in transaction or "amount" not in transaction:
-            continue
-
-        transaction_date = transaction["date"]
-        amount = transaction["amount"]
-
-        # Проверяем формат даты и что транзакция относится к нужному месяцу
-        try:
-            # Парсим дату транзакции
-            trans_date = datetime.strptime(transaction_date, "%Y-%m-%d")
-            # Парсим целевой месяц
-            target_month = datetime.strptime(month, "%Y-%m")
-
-            # Проверяем, что транзакция в нужном месяце
-            if (
-                trans_date.year == target_month.year
-                and trans_date.month == target_month.month
-            ):
-
-                # Округляем сумму до ближайшего кратного limit в большую сторону
-                rounded_amount = round(amount / limit) * limit
-
-                # Вычисляем разницу (то, что "откладывается" в копилку)
-                difference = rounded_amount - amount
-
-                # Добавляем к общей сумме только если разница положительная
-                if difference > 0:
-                    total_investment += difference
-
-        except (ValueError, TypeError):
-            logger.error("Некорректные данные!!!!")
-            # Пропускаем транзакции с некорректными данными
-            continue
-
-    return round(total_investment, 2)
 
 
 @retry(stop=stop_after_attempt(4), wait=wait_fixed(2))

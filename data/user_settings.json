@@ -1,30 +1,4 @@
-[
-  {
-    "date": "2024-01-15",
-    "amount": 100.5,
-    "currency": "USD",
-    "description": "Coffee shop purchase",
-    "state": "EXECUTED"
-  },
-  {
-    "date": "2024-01-16",
-    "amount": 2500.0,
-    "currency": "RUB",
-    "description": "Payment for services",
-    "state": "EXECUTED"
-  },
-  {
-    "date": "2024-01-17",
-    "amount": 50.0,
-    "currency": "EUR",
-    "description": "Coffee with friends",
-    "state": "PENDING"
-  },
-  {
-    "date": "2024-01-18",
-    "amount": 150.75,
-    "currency": "USD",
-    "description": "Restaurant dinner",
-    "state": "CANCELED"
-  }
-]
+{
+  "user_currencies": ["USD", "EUR"],
+  "user_stocks": ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+}

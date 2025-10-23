@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from src.utils import (get_currency_rates, get_stock_prices_from_yahoo,
                        get_top_transactions)
 from src.utils.statistic import get_card_statistics
-from src.welcome import get_greeting_by_time
+from src.utils.welcome import get_greeting_by_time
 
 
 def format_currency_rates_for_report(rates_data: Dict) -> List[Dict]:

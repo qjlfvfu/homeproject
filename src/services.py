@@ -58,3 +58,60 @@ def finder(query, json_file):
             "message": f"Ошибка при поиске: {str(e)}",
             "results": [],
         }
+
+
+def investment_bank(
+    month: str, transactions: List[Dict[str, Any]], limit: int
+) -> float:
+    """
+    Рассчитывает сумму для откладывания в «Инвесткопилку» за указанный месяц.
+
+    Args:
+        month: Месяц в формате 'YYYY-MM'
+        transactions: Список транзакций с полями 'date' и 'amount'
+        limit: Предел для округления сумм операций
+
+    Returns:
+        float: Сумма, которую удалось бы отложить в «Инвесткопилку»
+    """
+    total_investment = 0.0
+
+    for transaction in transactions:
+        # Проверяем, что транзакция содержит необходимые поля
+        if "date" not in transaction or "amount" not in transaction:
+            continue
+
+        transaction_date = transaction["date"]
+        amount = transaction["amount"]
+
+        # Проверяем формат даты и что транзакция относится к нужному месяцу
+        try:
+            # Парсим дату транзакции
+            trans_date = datetime.strptime(transaction_date, "%Y-%m-%d")
+            # Парсим целевой месяц
+            target_month = datetime.strptime(month, "%Y-%m")
+
+            # Проверяем, что транзакция в нужном месяце
+            if (
+                trans_date.year == target_month.year
+                and trans_date.month == target_month.month
+            ):
+
+                # Округляем сумму до ближайшего кратного limit в большую сторону
+                rounded_amount = round(amount / limit) * limit
+
+                # Вычисляем разницу (то, что "откладывается" в копилку)
+                difference = rounded_amount - amount
+
+                # Добавляем к общей сумме только если разница положительная
+                if difference > 0:
+                    total_investment += difference
+
+        except (ValueError, TypeError):
+            logger.error("Некорректные данные!!!!")
+            # Пропускаем транзакции с некорректными данными
+            continue
+
+    return round(total_investment, 2)
+
+
