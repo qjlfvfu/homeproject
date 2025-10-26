@@ -1,110 +1,84 @@
-from typing import Any, Dict, List, Tuple
-from unittest.mock import patch
-
 import pytest
+import pandas as pd
+import json
+import sys
+import os
 
+print("=== CONFTEST.PY ЗАГРУЖЕН ===")  # Для отладки
+
+# Добавляем путь к src для импортов
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+
+# Проверяем что пути добавились
+print(f"Python path: {sys.path}")
 
 @pytest.fixture
-def valid_date_formats() -> List[Tuple[str, str]]:
-    """Фикстура с валидными датами разных форматов"""
+def sample_transactions():
+    """Фикстура с примером транзакций"""
+    print("=== sample_transactions fixture called ===")
     return [
-        ("2023-12-31", "31.12.2023"),
-        ("2023-12-31T23:59:59.999", "31.12.2023"),
-        ("2023-12-31T14:30:45", "31.12.2023"),
-        ("1970-01-01", "01.01.1970"),
-        ("2024-02-29T12:00:00.000", "29.02.2024"),
-    ]
-
-
-@pytest.fixture
-def edge_case_dates() -> List[Tuple[str, str]]:
-    """Фикстура с пограничными случаями дат"""
-    return [
-        ("2000-01-01T00:00:00.000", "01.01.2000"),
-        ("2100-12-31T23:59:59.999", "31.12.2100"),
-        ("1900-01-01T12:30:45.123", "01.01.1900"),
-    ]
-
-
-@pytest.fixture
-def invalid_dates() -> List[str]:
-    """Фикстура с невалидными датами"""
-    return [
-        "invalid-date-format",
-        "2023-13-45",
-        "2023/12/31",
-        "31.12.2023",
-        "2023-12-31T25:61:61.999",
-        "",
-        "12345",
-    ]
-
-
-@pytest.fixture
-def datetime_formats() -> List[Tuple[str, str]]:
-    """Фикстура с разными форматами datetime"""
-    return [
-        ("2023-01-15T14:30:00.123456", "15.01.2023"),
-        ("2023-01-15T14:30:00.123", "15.01.2023"),
-        ("2023-01-15T14:30:00", "15.01.2023"),
-        ("2023-01-15", "15.01.2023"),
-    ]
-
-
-@pytest.fixture
-def test_operations() -> List[Dict[str, Any]]:
-    """Фикстура с тестовыми операциями"""
-    return [
-        {"id": 1, "state": "EXECUTED", "date": "2023-01-01", "amount": 100},
-        {"id": 2, "state": "PENDING", "date": "2023-01-02", "amount": 200},
-        {"id": 3, "state": "EXECUTED", "date": "2023-01-03", "amount": 300},
-        {"id": 4, "state": "CANCELED", "date": "2023-01-04", "amount": 400},
-    ]
-
-
-@pytest.fixture
-def account_data() -> List[str]:
-    """Фикстура с данными счетов"""
-    return ["Счет 1234567890123456", "Счет 9876543210987654", "Visa 1234567812345678"]
-
-
-@pytest.fixture
-def currency_data() -> List[Dict[str, Any]]:
-    """Фикстура с данными транзакций"""
-    return [
-        {"amount": "1300", "from_curr": "RUB", "to_currs": "USD", "date": "2023-02-04"},
-        {"amount": "600", "from_curr": "RUB", "to_currs": "USD", "date": "2011-09-11"},
         {
-            "amount": "56473890",
-            "from_curr": "RUB",
-            "to_currs": "USD",
-            "date": "2022-07-04",
+            "date": "15.01.2024",
+            "amount": 1000.0,
+            "category": "Продукты",
+            "description": "Пятерочка",
+            "card_number": "1234567890123456"
         },
+        {
+            "date": "16.01.2024",
+            "amount": 500.0,
+            "category": "Кафе",
+            "description": "Кофе Starbucks",
+            "card_number": "1234567890123456"
+        },
+        {
+            "date": "17.01.2024",
+            "amount": 750.0,
+            "category": "Транспорт",
+            "description": "Такси",
+            "card_number": "1234567890123456"
+        }
     ]
 
+@pytest.fixture
+def sample_dataframe():
+    """Фикстура с DataFrame для тестов отчетов"""
+    print("=== sample_dataframe fixture called ===")
+    data = {
+        'date': ['15.01.2024', '16.01.2024', '17.01.2024', '18.01.2024'],
+        'amount': [1000, 500, 750, 1200],
+        'category': ['Продукты', 'Кафе', 'Транспорт', 'Продукты'],
+        'description': ['Пятерочка', 'Starbucks', 'Такси', 'Магнит']
+    }
+    return pd.DataFrame(data)
 
 @pytest.fixture
-def mock_requests():
-    """Фикстура возвращает мок для requests"""
-    with patch("requests.get") as mock_get:
-        yield mock_get
-
+def empty_dataframe():
+    """Фикстура с пустым DataFrame"""
+    return pd.DataFrame(columns=['date', 'amount', 'category', 'description'])
 
 @pytest.fixture
-def transactions_data():
-    transactions = [
-        {"date": "2024-01-15", "amount": 123.45},
-        {"date": "2024-01-20", "amount": 67.89},
-        {"date": "2024-02-01", "amount": 150.00},
-        {"date": "2024-01-25", "amount": 95.50},
-        {"date": "2024-01-30", "amount": 200.00},
+def transactions_with_phones():
+    """Фикстура с транзакциями содержащими телефонные номера"""
+    return [
+        {
+            "date": "15.01.2024",
+            "amount": 100.0,
+            "category": "Связь",
+            "description": "Пополнение МТС +7 921 11-22-33"
+        }
     ]
 
-
-DEMO_STOCK_PRICES = [
-    {"stock": "AAPL", "price": 150.12},
-    {"stock": "AMZN", "price": 3173.18},
-    {"stock": "GOOGL", "price": 2742.39},
-    {"stock": "MSFT", "price": 296.71},
-    {"stock": "TSLA", "price": 1007.08},
-]
+@pytest.fixture
+def transactions_with_person_transfers():
+    """Фикстура с переводами физлицам"""
+    return [
+        {
+            "date": "15.01.2024",
+            "amount": 1000.0,
+            "category": "Переводы",
+            "description": "Валерий А."
+        }
+    ]
