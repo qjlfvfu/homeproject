@@ -73,7 +73,7 @@ python -m unittest discover tests`
 `pip install coverage`
 Запустите тест:
 `coverage run -m unittest discover tests`
-Сделайте красивый файлик с отчетом о покрытии:
+Сделайте красивый файл с отчетом о покрытии:
 `coverage html`
 
 # Требования
