@@ -1,4 +1,4 @@
-# homeproject
+# homeprojectgit log --oneline --graph --all -10
 Проект для поиска, фильтрации и сохранения вакансий с платформы HeadHunter.
 
 ## Установка и запуск
